@@ -1,0 +1,182 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;
+
+  /* Surfaces: the darkness ramp. A child is exactly one step up from its
+     parent: page (background) → panels (surface) → controls (elevated) →
+     floating layers (overlay). border outlines panels; border-subtle is for
+     internal dividers. */
+  --color-background: #0d0d18;
+  --color-surface: #15151f;
+  --color-elevated: #1c1c2b;
+  --color-overlay: #242438;
+  --color-border: #33334c;
+  --color-border-subtle: #222233;
+  /* Text: three tiers only. foreground = read first, muted = read second,
+     faint = skippable (placeholders, metadata, line numbers). */
+  --color-foreground: #f4f4fa;
+  --color-muted: #b8b8ca;
+  --color-faint: #8d8da4;
+  /* Hues: accent = primary interactive (accent-bright = its hover/active),
+     info = technical data, violet = secondary/decorative. Status colors are
+     reserved for actual pass/fail/edge state. */
+  --color-accent: #8795ff;
+  --color-accent-bright: #a9b3ff;
+  --color-info: #72dcef;
+  --color-violet: #bfaef9;
+  --color-success: #53d987;
+  --color-warning: #fbbf24;
+  --color-danger: #f87171;
+}
+
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+}
+
+body {
+  /* Subtle accent glow at the top of the page (behind hero / page header).
+     Scrolls with the document; stays out of the way on tool pages. */
+  background:
+    radial-gradient(
+      70rem 34rem at 50% -12rem,
+      color-mix(in srgb, var(--color-accent) 8%, transparent),
+      transparent 70%
+    )
+      no-repeat,
+    var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-accent) 30%, transparent);
+}
+
+/* Thin, unobtrusive scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+kbd {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1;
+  padding: 3px 5px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  border-bottom-width: 2px;
+  background: var(--color-elevated);
+  color: var(--color-info);
+}
+
+/* ---- Range sliders ----
+   The inputs use `appearance: none`, which strips the native thumb on
+   WebKit: restyle it explicitly so it's visible everywhere. Sized to
+   match Chrome's native thumb (14px). */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: var(--color-accent);
+  cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: none;
+  border-radius: 9999px;
+  background: var(--color-accent);
+  cursor: pointer;
+}
+
+/* ---- Motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---- Forced colors (Windows High Contrast) ----
+   Box-shadow focus rings (e.g. focus-within:ring-*) are not rendered in
+   forced-colors mode, so restore an outline where focus matters. */
+@media (forced-colors: active) {
+  .cm-editor.cm-focused,
+  .cm-editor .cm-content:focus-visible {
+    outline: 2px solid Highlight;
+  }
+  .cm-editor {
+    outline: none;
+  }
+}
+
+/* ---- CodeMirror 6, match the app surface ---- */
+.cm-editor {
+  height: 100%;
+  font-size: 13px;
+  background: transparent;
+  outline: none;
+}
+.cm-editor .cm-scroller {
+  font-family: var(--font-mono);
+  line-height: 1.6;
+}
+.cm-editor .cm-gutters {
+  background: transparent;
+  border-right: 1px solid var(--color-border-subtle);
+}
+.cm-editor .cm-lineNumbers .cm-gutterElement {
+  color: var(--color-faint);
+  min-width: 34px;
+}
+.cm-editor .cm-activeLine {
+  background: transparent;
+}
+.cm-editor .cm-activeLineGutter {
+  background: transparent;
+  color: var(--color-muted);
+}
+.cm-editor .cm-cursor {
+  border-left-color: var(--color-foreground);
+}
+.cm-editor .cm-selectionBackground,
+.cm-editor ::selection {
+  background: color-mix(in srgb, var(--color-accent) 25%, transparent) !important;
+}
+.cm-editor .cm-placeholder {
+  color: var(--color-faint);
+}
+
+/* Error line markers (JSON validation) */
+.cm-editor .tst-error-line {
+  background: color-mix(in srgb, var(--color-danger) 8%, transparent);
+}
+.cm-editor .tst-error-line .cm-gutterElement {
+  background: color-mix(in srgb, var(--color-danger) 25%, transparent);
+  color: var(--color-danger);
+  border-radius: 2px;
+}
